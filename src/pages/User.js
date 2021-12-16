@@ -12,7 +12,7 @@ function User() {
 
   useEffect(() => {
     dispatch(fetchUsers());
-  }, [dispatch]);
+  }, []);
 
 	return (
     <ul>

@@ -24,7 +24,7 @@ const userSlice = createSlice({
 	extraReducers: {
     // @ts-ignore
     [fetchUsers.fulfilled]: (state, action) => {
-      state.users = state.users.concat(action.payload)
+      state.users = action.payload
     },
   }
 })
