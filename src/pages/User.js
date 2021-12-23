@@ -11,13 +11,15 @@ function User() {
   }
 
   useEffect(() => {
-    dispatch(fetchUsers());
+    if(!users) {
+      dispatch(fetchUsers());
+    }
   }, []);
 
 	return (
     <ul>
       {
-        users.map((user) => (
+        users?.map((user) => (
          <li key={user.id}>
            <span>{`${user.first_name} ${user.last_name}`}</span>
            <button onClick={() => handleDelete(user.id)}>delete</button>

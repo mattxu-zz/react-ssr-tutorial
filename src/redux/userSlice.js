@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getUsers } from '../services/userService';
 
 const initialState = {
-	users: [],
+	users: null,
 };
 
 export const fetchUsers = createAsyncThunk('posts/fetchUsers', async () => {

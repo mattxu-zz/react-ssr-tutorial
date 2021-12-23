@@ -1,11 +1,12 @@
+// @ts-nocheck
 import Express from 'express'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { Provider } from 'react-redux'
+import { matchRoutes, renderRoutes } from "react-router-config";
 import { createStore } from './redux/store'
-import { StaticRouter } from 'react-router-dom/server'
-import App from './App'
-import { getUsers } from './services/userService'
+import { StaticRouter } from 'react-router-dom'
+import Routes from './Routes';
 
 const app = Express()
 const port = 3000
@@ -14,50 +15,33 @@ const port = 3000
 app.use('/static', Express.static('static'))
 
 // This is fired every time the server side receives a request
-app.use(handleRender)
+app.get('*', handleRender)
 
-// We are going to fill these out in the sections to follow
 function handleRender(req, res) {
-  // Create a new Redux store instance
   const store = createStore();
-
-  // Render the component to a string
-  const html = renderToString(
-    <Provider store={store}>
-      <StaticRouter location={req.url}>
-        <App />
-      </StaticRouter>
-    </Provider>
-  )
-
-  // Grab the initial state from our Redux store
-  const preloadedState = store.getState()
-
-  // Send the rendered page back to the client
-  res.send(renderFullPage(html, preloadedState))
-}
-
-async function handleRender2(req, res) {
-  // Create a new Redux store instance
-  const users = await getUsers();
-  const store = createStore({
-    users,
+  const promises = matchRoutes(Routes, req.url).map(({ route }) => {
+    const { loadData } = route;
+    return loadData ? loadData(store): null;
   });
 
-  // Render the component to a string
+  Promise.all(promises).then(() => {
+    const html = render(req, store);
+    res.send(html);
+  });
+}
+
+function render(req, store) {
   const html = renderToString(
     <Provider store={store}>
       <StaticRouter location={req.url}>
-        <App />
+        {renderRoutes(Routes)}
       </StaticRouter>
     </Provider>
   )
 
   // Grab the initial state from our Redux store
-  const preloadedState = store.getState()
-
-  // Send the rendered page back to the client
-  res.send(renderFullPage(html, preloadedState))
+  const preloadedState = store.getState();
+  return renderFullPage(html, preloadedState);
 }
 
 function renderFullPage(html, preloadedState) {
