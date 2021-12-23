@@ -1,5 +1,4 @@
 import {
-  Routes,
   Route
 } from "react-router-dom";
 import React from 'react';
@@ -8,10 +7,10 @@ import User from "./pages/User";
 
 function AppRoute() {
 	return (
-		<Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="user" element={<User />} />
-    </Routes>
+		<div>
+      <Route exact path="/" component={Home} />
+      <Route path="/user" component={User} />
+    </div>
 	)
 }
 
